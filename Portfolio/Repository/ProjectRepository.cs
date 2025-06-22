@@ -1,4 +1,5 @@
-﻿using Portfolio.DB_Context;
+﻿using Microsoft.EntityFrameworkCore;
+using Portfolio.DB_Context;
 using Portfolio.Models;
 using Portfolio.Repository_Interface;
 

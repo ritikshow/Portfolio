@@ -1,6 +1,8 @@
-﻿namespace Portfolio.Services
+﻿using Portfolio.Repository_Interface;
+
+namespace Portfolio.Services
 {
-    public class FileUploadService
+    public class FileUploadService: IFileUploadService
     {
     private readonly IWebHostEnvironment _env;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -13,29 +15,31 @@
 
     public async Task<string> SaveImageAsync(IFormFile file)
     {
-        var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-        var folderPath = Path.Combine(_env.ContentRootPath, "Upload", "Image");
-        Directory.CreateDirectory(folderPath);
+            var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+            var folderPath = Path.Combine(_env.ContentRootPath, "Uploads", "Image");
+            Directory.CreateDirectory(folderPath);
 
-        var filePath = Path.Combine(folderPath, fileName);
-        using var stream = new FileStream(filePath, FileMode.Create);
-        await file.CopyToAsync(stream);
+            var filePath = Path.Combine(folderPath, fileName);
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await file.CopyToAsync(stream);
 
-        return GetBaseUrl() + "/Upload/Image/" + fileName;
-    }
+            // Return the absolute file system path
+            return filePath;
+        }
 
     public async Task<string> SaveResumeAsync(IFormFile file)
     {
-        var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-        var folderPath = Path.Combine(_env.ContentRootPath, "Upload", "Resume");
-        Directory.CreateDirectory(folderPath);
+            var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+            var folderPath = Path.Combine(_env.ContentRootPath, "Uploads", "Resume");
+            Directory.CreateDirectory(folderPath);
 
-        var filePath = Path.Combine(folderPath, fileName);
-        using var stream = new FileStream(filePath, FileMode.Create);
-        await file.CopyToAsync(stream);
+            var filePath = Path.Combine(folderPath, fileName);
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await file.CopyToAsync(stream);
 
-        return GetBaseUrl() + "/Upload/Resume/" + fileName;
-    }
+            // Return the absolute file system path
+            return filePath;
+        }
 
     private string GetBaseUrl()
     {

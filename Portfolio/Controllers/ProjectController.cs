@@ -11,10 +11,12 @@ namespace Portfolio.Controllers
     {
 
         private readonly IProjectRepository _repo;
+        private readonly IFileUploadService _fileService;
 
-        public ProjectController(IProjectRepository repo)
+        public ProjectController(IProjectRepository repo, IFileUploadService fileService)
         {
             _repo = repo;
+            _fileService = fileService;
         }
 
         [HttpGet]
@@ -35,9 +37,13 @@ namespace Portfolio.Controllers
 
         // POST: api/Project
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Project project)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Create([FromForm] Project project)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (project.Logo != null)
+                project.PLogo = await _fileService.SaveImageAsync(project.Logo);
+            if (project.report != null)
+                project.reportP = await _fileService.SaveImageAsync(project.report);
 
             var created = await _repo.CreateAsync(project);
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);

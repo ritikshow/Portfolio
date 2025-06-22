@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Portfolio.DB_Context;
@@ -40,7 +41,7 @@ builder.Services.AddAuthorization();
 // 3. Swagger with JWT support (with Bearer token format)
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new() { Title = "Car Booking API", Version = "v1" });
+    options.SwaggerDoc("v1", new() { Title = "My_Portfolio API", Version = "v1" });
 
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -70,6 +71,11 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddSingleton<TokenService>();
 builder.Services.AddScoped<IAuthentication, AuthenticationRepository>();
+builder.Services.AddScoped<IAboutRepository, AboutRepository>();
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+
 
 builder.Services.AddCors(options =>
 {
@@ -94,8 +100,23 @@ app.UseCors("AllowAll");
 //if (app.Environment.IsDevelopment())
 //{
 app.UseSwagger();
-    app.UseSwaggerUI();
+app.UseSwaggerUI();
 //}
+app.UseStaticFiles(); // already exists
+
+// Serve files from Upload folder (not wwwroot)
+var uploadPath = Path.Combine(builder.Environment.ContentRootPath, "Upload");
+if (!Directory.Exists(uploadPath))
+{
+    Directory.CreateDirectory(uploadPath);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadPath),
+    RequestPath = "/Upload"
+});
+
 
 app.UseHttpsRedirection();
 
