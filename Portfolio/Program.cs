@@ -11,8 +11,6 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -76,7 +74,6 @@ builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -88,7 +85,6 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -96,27 +92,25 @@ var app = builder.Build();
 
 app.UseCors("AllowAll");
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+// Swagger
 app.UseSwagger();
 app.UseSwaggerUI();
-//}
-app.UseStaticFiles(); // already exists
 
-// Serve files from Upload folder (not wwwroot)
-var uploadPath = Path.Combine(builder.Environment.ContentRootPath, "Upload");
-if (!Directory.Exists(uploadPath))
+// Serve static files from wwwroot (if any)
+app.UseStaticFiles();
+
+// Serve files from Uploads folder (not wwwroot)
+var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "Uploads");
+if (!Directory.Exists(uploadsPath))
 {
-    Directory.CreateDirectory(uploadPath);
+    Directory.CreateDirectory(uploadsPath);
 }
 
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(uploadPath),
-    RequestPath = "/Upload"
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/Uploads"
 });
-
 
 app.UseHttpsRedirection();
 
