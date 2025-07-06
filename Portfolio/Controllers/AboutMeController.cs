@@ -55,21 +55,25 @@ namespace Portfolio.Controllers
             var existing = await _repo.GetByIdAsync(id);
             if (existing == null) return NotFound();
 
-            model.ImageFile = model.Image != null
-                ? await _fileService.SaveImageAsync(model.Image)
-                : existing.ImageFile;
+            // Update only the properties you want to allow changes for
+            existing.Name = model.Name;
+            existing.Gmail = model.Gmail;
+            existing.PhoneNumber = model.PhoneNumber;
+            existing.Bio = model.Bio;
+            existing.Description = model.Description;
+            existing.LastModified = DateTime.UtcNow;
 
-            model.ResumeFile = model.Resume != null
-                ? await _fileService.SaveResumeAsync(model.Resume)
-                : existing.ResumeFile;
+            if (model.Image != null)
+                existing.ImageFile = await _fileService.SaveImageAsync(model.Image);
 
-            model.Id = id;
-            model.CreatedAt = existing.CreatedAt;
-            model.LastModified = DateTime.UtcNow;
+            if (model.Resume != null)
+                existing.ResumeFile = await _fileService.SaveResumeAsync(model.Resume);
 
-            var updated = await _repo.UpdateAsync(model);
+            var updated = await _repo.UpdateAsync(existing);
+
             return Ok(updated);
         }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)

@@ -51,12 +51,18 @@ namespace Portfolio.Controllers
 
         // PUT: api/Project/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Project project)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Update(int id, [FromForm] Project project)
         {
-            if (id != project.Id) return BadRequest("ID mismatch.");
+            //if (id != project.Id) return BadRequest("ID mismatch.");
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
+            if (project.Logo != null)
+                project.PLogo = await _fileService.SaveImageAsync(project.Logo);
+            if (project.report != null)
+                project.reportP = await _fileService.SaveImageAsync(project.report);
             project.LastModified = DateTime.UtcNow;
+            project.Id = id;
             var updated = await _repo.UpdateAsync(project);
             return Ok(updated);
         }
