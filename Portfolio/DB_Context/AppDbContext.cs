@@ -13,5 +13,6 @@ namespace Portfolio.DB_Context
         public DbSet<About_Me> About_Mes { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<skill> skill { get; set; }
     }
 }
