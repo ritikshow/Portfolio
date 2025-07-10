@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.Contracts;
 
 namespace Portfolio.Models
 {
@@ -14,6 +15,10 @@ namespace Portfolio.Models
         [Required]
         [EmailAddress]
         public string Gmail { get; set; }
+
+        public string Experience { get; set; }
+
+        public string Location { get; set; }
 
         [Required]
         public string PhoneNumber { get; set; }
@@ -30,9 +35,9 @@ namespace Portfolio.Models
         public DateTime LastModified { get; set; } = DateTime.UtcNow;
 
         [NotMapped]
-        public IFormFile Image { get; set; }
+        public IFormFile? Image { get; set; }
 
         [NotMapped]
-        public IFormFile Resume { get; set; }
+        public IFormFile? Resume { get; set; }
     }
 }

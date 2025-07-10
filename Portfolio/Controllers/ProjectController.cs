@@ -22,17 +22,28 @@ namespace Portfolio.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var projects = await _repo.GetAllAsync();
-            return Ok(projects);
+            Service<IEnumerable<Project>> res = new();
+            res.Data = await _repo.GetAllAsync();
+            res.Message = "Projects retrieved successfully.";
+            res.Success = true;
+            return Ok(res);
         }
 
         // GET: api/Project/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var project = await _repo.GetByIdAsync(id);
-            if (project == null) return NotFound();
-            return Ok(project);
+            Service<Project> res = new();
+            res.Data = await _repo.GetByIdAsync(id);
+            if (res.Data == null)
+            {
+                res.Message = "Project not found.";
+                res.Success = false;
+                return NotFound(res);
+            }
+            res.Message = "Project retrieved successfully.";
+            res.Success = true;
+            return Ok(res);
         }
 
         // POST: api/Project
@@ -40,13 +51,23 @@ namespace Portfolio.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Create([FromForm] Project project)
         {
+            Service<Project> res = new();
             if (project.Logo != null)
                 project.PLogo = await _fileService.SaveImageAsync(project.Logo);
             if (project.report != null)
                 project.reportP = await _fileService.SaveImageAsync(project.report);
 
-            var created = await _repo.CreateAsync(project);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+
+            res.Data = await _repo.CreateAsync(project);
+            if (res.Data == null)
+            {
+                res.Message = "Failed to create project.";
+                res.Success = false;
+                return BadRequest(res);
+            }
+            res.Message = "Project created successfully.";
+            res.Success = true;
+            return Ok(res);
         }
 
         // PUT: api/Project/{id}
@@ -54,6 +75,7 @@ namespace Portfolio.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Update(int id, [FromForm] Project project)
         {
+            Service<Project> res = new();
             //if (id != project.Id) return BadRequest("ID mismatch.");
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -63,18 +85,34 @@ namespace Portfolio.Controllers
                 project.reportP = await _fileService.SaveImageAsync(project.report);
             project.LastModified = DateTime.UtcNow;
             project.Id = id;
-            var updated = await _repo.UpdateAsync(project);
-            return Ok(updated);
+
+            res.Data = await _repo.UpdateAsync(project);
+            if (res.Data == null)
+            {
+                res.Message = "Failed to update project.";
+                res.Success = false;
+                return NotFound(res);
+            }
+            res.Message = "Project updated successfully.";
+            res.Success = true;
+            return Ok(res);
         }
 
         // DELETE: api/Project/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _repo.DeleteAsync(id);
-            if (!deleted) return NotFound();
-
-            return NoContent();
+            Service<Project> res = new();
+            res.Data = await _repo.GetByIdAsync(id);
+            if (res.Data == null)
+            {
+                res.Message = "Project not found.";
+                res.Success = false;
+                return NotFound(res);
+            }
+            res.Message = "Project found, proceeding to delete.";
+            res.Success = true;
+            return Ok(res);
         }
     }
 }

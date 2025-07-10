@@ -16,10 +16,10 @@ namespace Portfolio.Models
         public string? reportP { get; set; }
 
         [NotMapped]
-        public IFormFile Logo { get; set; }
+        public IFormFile? Logo { get; set; }
 
         [NotMapped]
-        public IFormFile report { get; set; }
+        public IFormFile? report { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime LastModified { get; set; } = DateTime.UtcNow;
 
