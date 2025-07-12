@@ -14,5 +14,6 @@ namespace Portfolio.DB_Context
         public DbSet<Project> Projects { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<skill> skill { get; set; }
+        public DbSet<Contanct> Contancts { get; set; }
     }
 }

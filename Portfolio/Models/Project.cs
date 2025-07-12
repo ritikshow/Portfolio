@@ -14,6 +14,8 @@ namespace Portfolio.Models
         public string? PLogo { get; set; }
         public string? githublink { get; set; }
         public string? reportP { get; set; }
+        public string? ProjectType { get; set; } // e.g., Web Development, Mobile App, etc.
+        public bool? IsRecent { get; set; }// Indicates if the project is recent
 
         [NotMapped]
         public IFormFile? Logo { get; set; }

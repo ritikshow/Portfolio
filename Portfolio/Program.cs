@@ -74,6 +74,7 @@ builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 builder.Services.AddScoped<Iskill, SkillRepository>();
+builder.Services.AddScoped<Icontact, contactRepository>();
 
 builder.Services.AddCors(options =>
 {
